@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - StowQR</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Sign In to StowQR</h1>
+        <nav>
+            <a href="index.html">Home</a>
+        </nav>
+    </header>
+    <main>
+        <form id="signInForm">
+	   <div class="input-container">
+              <input type="email" placeholder="Email" required>
+           </div>
+           <div class="input-container">
+              <input type="password" placeholder="Password" required>
+           </div>
+           <div class="button-container">
+               <button class="large-button" type="submit">Sign In</button>
+           </div>
+        </form>
+	
+        <p><a href="create-account.html">Create Account</a></p>
+        
+    </main>
+    <footer>
+        <p>&copy; 2024 StowQR</p>
+    </footer>
+    <script>
+      document.getElementById("signInForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    // Logic for signing in
+    alert("Sign in functionality not implemented yet.");
+     });
+   </script>
+</body>
+</html>
