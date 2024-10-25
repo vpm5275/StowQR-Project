@@ -85,3 +85,7 @@ footer {
     background-color: #f1f1f1;
 }
 
+#qrcode {
+   margin-top: 20px;
+   display: inline-block;
+
