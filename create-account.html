@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account - StowQR</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <header>
@@ -14,38 +14,36 @@
         </nav>
     </header>
     <main>
-        <form id="createAccountForm">
-		<div class="input-container">
-            		<input class = "input" type="text" placeholder="Name" required>
-                </div>
-                <div class="input-container">
-            		<input type="email" placeholder="Email" required>
-                </div>
-                <div class="input-container">
-            		<input type="password" placeholder="Password" required>
-                </div>
-                <div class="input-container">
-            		<input type="password" placeholder="Confirm Password" required>
-		</div>
-                
-           <button class="large-button" type="submit">Create Account</button>
-           
-           <p><a href="sign-in.html">Already have an account? Sign In</a></p>
-
+        <form id="createAccountForm" action="/create-account" method="POST">
+            <div class="input-container">
+                <input class="input" type="text" name="name" placeholder="Name" required>
+            </div>
+            <div class="input-container">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-container">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <div class="input-container">
+                <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+            </div>
+            <button class="large-button" type="submit">Create Account</button>
+            <p><a href="sign-in.html">Already have an account? Sign In</a></p>
         </form>
-   
-       
-            
     </main>
     <footer>
         <p>&copy; 2024 StowQR</p>
     </footer>
     <script>
-      document.getElementById("createAccountForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    // Logic for creating an account
-    alert("Account creation functionality not implemented yet.");
-     });
-  </script>
+        document.getElementById("createAccountForm").addEventListener("submit", function(event) {
+            const password = document.querySelector('input[name="password"]').value;
+            const confirmPassword = document.querySelector('input[name="confirmPassword"]').value;
+
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                alert("Passwords do not match. Please try again.");
+            }
+        });
+    </script>
 </body>
 </html>
