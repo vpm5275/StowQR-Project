@@ -4,7 +4,8 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 
-// Setup Express
+const PORT = 3001;
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname)); // Serves static files from the current directory
@@ -18,68 +19,54 @@ const connection = mysql.createConnection({
 });
 
 connection.connect((err) => {
-    if (err) throw err;
+    if (err) {
+        console.error('Error connecting to MySQL Database:', err);
+        return;
+    }
     console.log('Connected to MySQL Database.');
 });
 
-// Route to serve Create Account Page
-app.get('/create-account', (req, res) => {
-    res.sendFile(__dirname + '/create-account.html');
+// Route to serve Add Item Page
+app.get('/add-item.html', (req, res) => {
+    res.sendFile(__dirname + '/add-item.html');
 });
 
-// Endpoint to create a new account
-app.post('/create-account', (req, res) => {
-    const { name, email, password } = req.body;
-    const hashedPassword = bcrypt.hashSync(password, 8);
+// Route to serve Search Items Page
+app.get('/search-items.html', (req, res) => {
+    res.sendFile(__dirname + '/search-items.html');
+});
 
-    const query = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-    connection.query(query, [name, email, hashedPassword], (err, result) => {
+// Endpoint to add an item
+app.post('/add-item', (req, res) => {
+    const { itemName, location, quantity, category } = req.body;
+    const userId = 1; // Replace with actual session-based userId
+
+    const query = "INSERT INTO items (user_id, name, location, quantity, category) VALUES (?, ?, ?, ?, ?)";
+    connection.query(query, [userId, itemName, location, quantity, category], (err, result) => {
         if (err) {
-            res.status(500).send("Error creating account.");
-        } else {
-            res.redirect('/sign-in.html'); // Redirect to sign-in page after successful account creation
+            console.error('Error adding item:', err);
+            return res.status(500).json({ success: false });
         }
+        res.json({ success: true });
     });
 });
 
-// Route to serve Sign In Page
-app.get('/sign-in', (req, res) => {
-    res.sendFile(__dirname + '/sign-in.html');
-});
+// Endpoint to search items
+app.get('/search-items', (req, res) => {
+    const userId = 1; // Replace with actual session-based userId
+    const query = req.query.query;
 
-// Endpoint for signing in
-app.post('/sign-in', (req, res) => {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.json({ success: false, message: "Email or password missing in the request." });
-    }
-
-    const query = "SELECT * FROM users WHERE email = ?";
-    connection.query(query, [email], (err, results) => {
-        if (err) throw err;
-
-        if (results.length === 0) {
-            res.json({ success: false, message: "Incorrect email or password." });
-        } else {
-            const user = results[0];
-            const passwordIsValid = bcrypt.compareSync(password, user.password);
-
-            if (passwordIsValid) {
-                res.json({ success: true });
-            } else {
-                res.json({ success: false, message: "Incorrect email or password." });
-            }
+    const searchQuery = "SELECT * FROM items WHERE user_id = ? AND name LIKE ?";
+    connection.query(searchQuery, [userId, `%${query}%`], (err, results) => {
+        if (err) {
+            console.error('Error searching items:', err);
+            return res.status(500).json({ success: false });
         }
+        res.json({ success: true, items: results });
     });
 });
 
-// Route to serve Dashboard Page
-app.get('/dashboard.html', (req, res) => {
-    res.sendFile(__dirname + '/dashboard.html');
-});
-
-// Start the server
-app.listen(3000, () => {
-    console.log('Server is running on port 3000.');
+// Start the server on port 3001
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}.`);
 });

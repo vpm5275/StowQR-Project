@@ -14,28 +14,43 @@
         </nav>
     </header>
     <main>
-      <form id="searchItemForm">
-
-	<div class="input-container">
-            <input type="text" placeholder="Search for items..." id="searchInput">
-        </div>
-        <div class="button-container">
-            <button class="large-button" type="submit" onclick="searchItems()">Search</button>
-        </div>
-        <div id="searchResults">
-            <!-- Search results will be displayed here -->
-        </div>
-      </form>
+        <form id="searchItemForm">
+            <div class="input-container">
+                <input type="text" placeholder="Search for items..." id="searchInput" required>
+            </div>
+            <div class="button-container">
+                <button class="large-button" type="submit">Search</button>
+            </div>
+        </form>
+        <div id="searchResults"></div>
     </main>
     <footer>
         <p>&copy; 2024 StowQR</p>
     </footer>
     <script>
-      function searchItems() {
-    const query = document.getElementById("searchInput").value;
-    // Logic for searching items
-    alert("Search functionality not implemented yet.");
-    }
+        async function searchItems() {
+            const query = document.getElementById("searchInput").value;
+            const response = await fetch(`/search-items?query=${encodeURIComponent(query)}`);
+            const result = await response.json();
+
+            const searchResultsContainer = document.getElementById("searchResults");
+            searchResultsContainer.innerHTML = ""; // Clear previous results
+
+            if (result.success) {
+                result.items.forEach(item => {
+                    const itemElement = document.createElement("div");
+                    itemElement.textContent = `Name: ${item.name}, Location: ${item.location}, Quantity: ${item.quantity}, Category: ${item.category}`;
+                    searchResultsContainer.appendChild(itemElement);
+                });
+            } else {
+                searchResultsContainer.innerHTML = "No items found.";
+            }
+        }
+
+        document.getElementById("searchItemForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            searchItems();
+        });
     </script>
 </body>
 </html>

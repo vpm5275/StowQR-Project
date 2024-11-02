@@ -9,7 +9,7 @@
 <body>
     <header>
         <h1>Add Item</h1>
-	<nav>
+        <nav>
             <a href="dashboard.html">Dashboard</a>
         </nav>
     </header>
@@ -54,10 +54,25 @@
     </footer>
 
     <script>
-        document.getElementById("addItemForm").addEventListener("submit", function(event) {
+        document.getElementById("addItemForm").addEventListener("submit", async function(event) {
             event.preventDefault();
-            // Add your form submission logic here
-            alert("Add functionality not implemented yet."); // Temporary alert for testing
+            const itemName = document.getElementById("itemName").value;
+            const location = document.getElementById("location").value;
+            const quantity = document.getElementById("quantity").value;
+            const category = document.getElementById("category").value;
+
+            const response = await fetch("/add-item", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ itemName, location, quantity, category })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert("Item added successfully!");
+            } else {
+                alert("Failed to add item.");
+            }
         });
     </script>
 </body>
