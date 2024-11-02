@@ -5,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner - StowQR</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Include the ZXing library -->
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <style>
+        /* Center the content */
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Style for QR code reader */
+        #cameraPreview {
+            width: 320px;
+            height: auto;
+            margin-top: 20px;
+            display: none; /* Hide until Open Camera is clicked */
+            border: 2px solid #333; /* Optional border for visibility */
+            border-radius: 8px;
+        }
+
+        #scanResult {
+            margin-top: 20px;
+            font-size: 18px;
+            display: none; /* Hide until Open Camera is clicked */
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -16,19 +44,61 @@
     <main>
         <h2>Scan a QR Code</h2>
         <div class="button-container">
-           <button class="large-button" onclick="startScan()">Open Camera</button>
+            <button class="large-button" onclick="startScan()">Open Camera</button>
         </div>
-        <div id="scanResult">
-            <!-- Scanned item details will appear here -->
+        <!-- Centered video element for the camera preview -->
+        <video id="cameraPreview"></video>
+        <div id="scanResult" style="display: none;">
+            Scanned Result: <span id="qr-result"></span>
         </div>
     </main>
     <footer>
         <p>&copy; 2024 StowQR</p>
     </footer>
+
     <script>
-      function startScan() {
-    // Logic to open the camera for scanning QR codes
-    alert("QR Code scanning functionality not implemented yet.");
+    let codeReader;
+    let selectedDeviceId;
+
+    function startScan() {
+        // Show the video preview
+        document.getElementById('cameraPreview').style.display = 'block';
+
+        // Initialize the ZXing code reader
+        codeReader = new ZXing.BrowserMultiFormatReader();
+        
+        // Get the available video devices (cameras)
+        codeReader.getVideoInputDevices()
+            .then((videoInputDevices) => {
+                if (videoInputDevices.length > 0) {
+                    // Use the first camera by default
+                    selectedDeviceId = videoInputDevices[0].deviceId;
+
+                    // Start decoding from the camera stream
+                    codeReader.decodeOnceFromVideoDevice(selectedDeviceId, 'cameraPreview')
+                        .then((result) => {
+                            // Display scanned result
+                            document.getElementById('qr-result').innerText = result.text;
+
+                            // Show the scan result
+                            document.getElementById('scanResult').style.display = 'block';
+
+                            // Stop the camera after a QR code is scanned
+                            codeReader.reset();
+                            document.getElementById('cameraPreview').style.display = 'none';
+                        })
+                        .catch((err) => {
+                            console.error('Error decoding QR code:', err);
+                            alert('QR Code not detected. Please try again.');
+                        });
+                } else {
+                    alert('No cameras found.');
+                }
+            })
+            .catch((err) => {
+                console.error('Error accessing cameras:', err);
+                alert('Could not access camera. Please check your permissions.');
+            });
     }
     </script>
 </body>
