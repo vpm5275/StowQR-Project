@@ -55,12 +55,17 @@
     <footer>
         <p>&copy; 2024 StowQR</p>
     </footer>
-
-    <script>
+<script>
     let codeReader;
     let selectedDeviceId;
+    let timeout;
+    let isScanning = false;
 
     function startScan() {
+        // Clear the previous scanned result
+        document.getElementById('qr-result').innerText = '';
+        document.getElementById('scanResult').style.display = 'none';
+
         // Show the video preview
         document.getElementById('cameraPreview').style.display = 'block';
 
@@ -74,9 +79,21 @@
                     // Use the first camera by default
                     selectedDeviceId = videoInputDevices[0].deviceId;
 
+                    // Set scanning status and a timeout for 10 seconds
+                    isScanning = true;
+                    timeout = setTimeout(() => {
+                        if (isScanning) {
+                            showErrorMessage();
+                        }
+                    }, 10000); // 10 seconds in milliseconds
+
                     // Start decoding from the camera stream
                     codeReader.decodeOnceFromVideoDevice(selectedDeviceId, 'cameraPreview')
                         .then((result) => {
+                            // Clear the timeout and stop scanning if a QR code is found
+                            clearTimeout(timeout);
+                            isScanning = false;
+
                             // Display scanned result
                             document.getElementById('qr-result').innerText = result.text;
 
@@ -89,7 +106,9 @@
                         })
                         .catch((err) => {
                             console.error('Error decoding QR code:', err);
-                            alert('QR Code not detected. Please try again.');
+                            if (isScanning) {
+                                showErrorMessage();
+                            }
                         });
                 } else {
                     alert('No cameras found.');
@@ -100,6 +119,17 @@
                 alert('Could not access camera. Please check your permissions.');
             });
     }
-    </script>
-</body>
+
+    function showErrorMessage() {
+        // Reset scanning status and stop the camera
+        isScanning = false;
+        codeReader.reset();
+        document.getElementById('cameraPreview').style.display = 'none';
+
+        // Show error message
+        alert('QR Code not detected. Please try again.');
+    }
+</script>
+
+   </body>
 </html>
