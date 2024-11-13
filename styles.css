@@ -1,49 +1,116 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
 }
 
 header {
+    background-color: #81a1c1;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+}
+
+main {
+    padding: 20px;
     text-align: center;
 }
 
 form {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center;
 }
 
-input, button {
-    display: block;
-    margin: 10px 0;
-    width: 100%;
+.input-container {
+    margin: 10px;
+    width: 100%; /* Set a width for the input containers */
+    max-width: 300px; /* Keep the max width */
+    text-align: left; /* Align text inside the input */
+    align-items: center;
+    justify-content: center;
+}
+
+input, select {
     padding: 10px;
+    width: 100%; /* Full width of the input container */
 }
 
-button {
-    background-color: #007bff;
+.button-container {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: center; /* Center buttons horizontally */
+    width: 100%;
+    justify-content: center;
+}
+
+
+.large-button {
+    padding: 12px;
+    font-size: 16px; /* Larger font size */
+    background-color: #81a1c1;
     color: white;
     border: none;
-    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 10px; /* Space between buttons */
+    width: 80%; /* Full width */
+    max-width: 300px; /* Max width */
 }
 
-button:hover {
-    background-color: #0056b3;
+.small-button {
+    padding: 8px;
+    font-size: 14px; /* Smaller font size */
+    background-color: #81a1c1;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 80%; /* Full width */
+    max-width: 300px; /* Max width */
+}
+
+.large-button:hover, .small-button:hover {
+    background-color: #4a6c82; /* Darker blue on hover */
 }
 
 footer {
-    position: absolute;
-    bottom: 10px;
     text-align: center;
-    width: 100%;
-    font-size: 14px;
-    color: #888;
+    padding: 10px;
+    background-color: #f1f1f1;
 }
+
+#qrcode {
+   margin-top: 20px;
+   display: inline-block;
+
+
+  /* Center the content */
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Style for QR code reader */
+        #cameraPreview {
+            width: 320px;
+            height: auto;
+            margin-top: 20px;
+            display: none; /* Hide until Open Camera is clicked */
+            border: 2px solid #333; /* Optional border for visibility */
+            border-radius: 8px;
+        }
+
+        #scanResult {
+            margin-top: 20px;
+            font-size: 18px;
+            display: none; /* Hide until Open Camera is clicked */
+        }
