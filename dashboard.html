@@ -3,25 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - StowQR</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>StowQR Dashboard</title>
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <header>
-        <h1>StowQR Dashboard</h1>
+        <h1>Welcome to StowQR Dashboard</h1>
     </header>
     <main>
-        <h2>Welcome to your StowQR Dashboard!</h2>
+        <button onclick="window.location.href='/logout'" class="large-button">Log Out</button>
+        <p>Welcome back, <span id="userName"></span>!</p>
         <p>Select an option to get started:</p>
-        <div class="button-container">
-            <button class="large-button" onclick="window.location.href='add-item.html'">Add Item</button>
-            <button class="large-button" onclick="window.location.href='search-items.html'">Search Items</button>
-            <button class="large-button" onclick="window.location.href='qr-code-generator.html'">QR Code Generator</button>
-            <button class="large-button" onclick="window.location.href='qr-code-scanner.html'">QR Code Scanner</button>
-        </div>
+        <button onclick="window.location.href='/add-item.html'" class="large-button">Add Item</button>
+        <button onclick="window.location.href='/search-items.html'" class="large-button">Search Items</button>
+        <button onclick="window.location.href='/qr-code-generator.html'" class="large-button">QR Code Generator</button>
+        <button onclick="window.location.href='/qr-code-scanner.html'" class="large-button">QR Code Scanner</button>
     </main>
     <footer>
         <p>&copy; 2024 StowQR</p>
     </footer>
+    <script>
+        // Fetch the username and set it dynamically
+        fetch('/get-username')
+            .then((response) => response.json())
+            .then((data) => {
+                document.getElementById('userName').textContent = data.userName || 'User';
+            })
+            .catch((err) => {
+                console.error('Error fetching username:', err);
+                document.getElementById('userName').textContent = 'User';
+            });
+    </script>
 </body>
 </html>
