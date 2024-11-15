@@ -50,6 +50,26 @@
     <footer>
         <p>&copy; 2024 StowQR</p>
     </footer>
+	<script>
+        document.getElementById("addItemForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const itemName = document.getElementById("itemName").value;
+            const location = document.getElementById("location").value;
+            const quantity = document.getElementById("quantity").value;
+            const category = document.getElementById("category").value;
+            const response = await fetch("/add-item", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ itemName, location, quantity, category })
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert("Item added successfully!");
+            } else {
+                alert("Failed to add item.");
+            }
+        });
+    </script>
 </body>
 </html>
 
