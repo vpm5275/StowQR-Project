@@ -8,16 +8,18 @@
 </head>
 <body>
     <header>
-        <h1>Welcome to StowQR Dashboard</h1>
+        <h1>Welcome to your StowQR Dashboard</h1>
     </header>
     <main>
         <button onclick="window.location.href='/logout'" class="large-button">Log Out</button>
         <p>Welcome back, <span id="userName"></span>!</p>
         <p>Select an option to get started:</p>
-        <button onclick="window.location.href='/add-item.html'" class="large-button">Add Item</button>
-        <button onclick="window.location.href='/search-items.html'" class="large-button">Search Items</button>
-        <button onclick="window.location.href='/qr-code-generator.html'" class="large-button">QR Code Generator</button>
-        <button onclick="window.location.href='/qr-code-scanner.html'" class="large-button">QR Code Scanner</button>
+	<div class="button-container">
+        	<button onclick="window.location.href='/add-item.html'" class="large-button">Add Item</button>
+        	<button onclick="window.location.href='/search-items.html'" class="large-button">Search Items</button>
+        	<button onclick="window.location.href='/qr-code-generator.html'" class="large-button">QR Code Generator</button>
+        	<button onclick="window.location.href='/qr-code-scanner.html'" class="large-button">QR Code Scanner</button>
+	</div>
     </main>
     <footer>
         <p>&copy; 2024 StowQR</p>
@@ -36,3 +38,4 @@
     </script>
 </body>
 </html>
+
