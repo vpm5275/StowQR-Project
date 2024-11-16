@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner - StowQR</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Include the ZXing library -->
     <script src="https://unpkg.com/@zxing/library@latest"></script>
     <style>
-        /* Center the content */
         main {
             display: flex;
             flex-direction: column;
@@ -16,21 +14,18 @@
             text-align: center;
             margin-top: 20px;
         }
-
-        /* Style for QR code reader */
         #cameraPreview {
             width: 320px;
             height: auto;
             margin-top: 20px;
-            display: none; /* Hide until Open Camera is clicked */
-            border: 2px solid #333; /* Optional border for visibility */
+            display: none;
+            border: 2px solid #333;
             border-radius: 8px;
         }
-
         #scanResult {
             margin-top: 20px;
             font-size: 18px;
-            display: none; /* Hide until Open Camera is clicked */
+            display: none;
         }
     </style>
 </head>
@@ -46,90 +41,56 @@
         <div class="button-container">
             <button class="large-button" onclick="startScan()">Open Camera</button>
         </div>
-        <!-- Centered video element for the camera preview -->
         <video id="cameraPreview"></video>
-        <div id="scanResult" style="display: none;">
-            Scanned Result: <span id="qr-result"></span>
+        <div id="scanResult">
+            Scanned Result: 
+            <ul id="qr-result"></ul>
         </div>
     </main>
     <footer>
         <p>&copy; 2024 StowQR</p>
     </footer>
+    <script>
+        let codeReader;
 
-<script>
-    let codeReader;
-    let selectedDeviceId;
-    let timeout;
-    let isScanning = false;
+        function startScan() {
+            document.getElementById('qr-result').innerHTML = '';
+            document.getElementById('scanResult').style.display = 'none';
+            document.getElementById('cameraPreview').style.display = 'block';
 
-    function startScan() {
-        // Clear the previous scanned result
-        document.getElementById('qr-result').innerText = '';
-        document.getElementById('scanResult').style.display = 'none';
+            codeReader = new ZXing.BrowserMultiFormatReader();
 
-        // Show the video preview
-        document.getElementById('cameraPreview').style.display = 'block';
+            codeReader.getVideoInputDevices()
+                .then((videoInputDevices) => {
+                    if (videoInputDevices.length > 0) {
+                        const selectedDeviceId = videoInputDevices[0].deviceId;
 
-        // Initialize the ZXing code reader
-        codeReader = new ZXing.BrowserMultiFormatReader();
-        
-        // Get the available video devices (cameras)
-        codeReader.getVideoInputDevices()
-            .then((videoInputDevices) => {
-                if (videoInputDevices.length > 0) {
-                    // Use the first camera by default
-                    selectedDeviceId = videoInputDevices[0].deviceId;
+                        codeReader.decodeOnceFromVideoDevice(selectedDeviceId, 'cameraPreview')
+                            .then((result) => {
+                                const items = JSON.parse(result.text);
 
-                    // Set scanning status and a timeout for 10 seconds
-                    isScanning = true;
-                    timeout = setTimeout(() => {
-                        if (isScanning) {
-                            showErrorMessage();
-                        }
-                    }, 10000); // 10 seconds in milliseconds
+                                const resultDiv = document.getElementById('qr-result');
+                                resultDiv.innerHTML = items.map(item =>
+                                    `<li>${item.name} (${item.quantity}) - ${item.category}</li>`
+                                ).join('');
+                                document.getElementById('scanResult').style.display = 'block';
 
-                    // Start decoding from the camera stream
-                    codeReader.decodeOnceFromVideoDevice(selectedDeviceId, 'cameraPreview')
-                        .then((result) => {
-                            // Clear the timeout and stop scanning if a QR code is found
-                            clearTimeout(timeout);
-                            isScanning = false;
-
-                            // Display scanned result
-                            document.getElementById('qr-result').innerText = result.text;
-
-                            // Show the scan result
-                            document.getElementById('scanResult').style.display = 'block';
-
-                            // Stop the camera after a QR code is scanned
-                            codeReader.reset();
-                            document.getElementById('cameraPreview').style.display = 'none';
-                        })
-                        .catch((err) => {
-                            console.error('Error decoding QR code:', err);
-                            if (isScanning) {
-                                showErrorMessage();
-                            }
-                        });
-                } else {
-                    alert('No cameras found.');
-                }
-            })
-            .catch((err) => {
-                console.error('Error accessing cameras:', err);
-                alert('Could not access camera. Please check your permissions.');
-            });
-    }
-
-    function showErrorMessage() {
-        // Reset scanning status and stop the camera
-        isScanning = false;
-        codeReader.reset();
-        document.getElementById('cameraPreview').style.display = 'none';
-
-        // Show error message
-        alert('QR Code not detected. Please try again.');
-    }
-</script>
+                                codeReader.reset();
+                                document.getElementById('cameraPreview').style.display = 'none';
+                            })
+                            .catch((err) => {
+                                console.error('Error decoding QR code:', err);
+                                alert('Failed to read QR code. Please try again.');
+                            });
+                    } else {
+                        alert('No cameras found.');
+                    }
+                })
+                .catch((err) => {
+                    console.error('Error accessing cameras:', err);
+                    alert('Could not access camera. Please check your permissions.');
+                });
+        }
+    </script>
 </body>
 </html>

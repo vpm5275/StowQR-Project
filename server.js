@@ -142,6 +142,34 @@ app.get('/get-username', isAuthenticated, (req, res) => {
     res.json({ userName: req.session.userName });
 });
 
+app.get('/get-items', (req, res) => {
+    const { location } = req.query;
+    const userId = req.session.userId;
+
+    if (!userId) {
+        return res.status(401).json({ success: false, message: 'Unauthorized. Please log in.' });
+    }
+
+    if (!location) {
+        return res.status(400).json({ success: false, message: 'Location is required.' });
+    }
+
+    const query = 'SELECT name, quantity, category FROM items WHERE user_id = ? AND location = ?';
+    connection.query(query, [userId, location], (err, results) => {
+        if (err) {
+            console.error('Error fetching items:', err);
+            return res.status(500).json({ success: false, message: 'Error fetching items.' });
+        }
+
+        if (results.length === 0) {
+            return res.json({ success: false, message: 'No items found for this location.' });
+        }
+
+        res.json({ success: true, items: results });
+    });
+});
+
+
 
 // Start the server
 app.listen(PORT, () => {

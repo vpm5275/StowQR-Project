@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator - StowQR</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Include the QRCode.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        /* Center the QR code and print button */
         #printButton {
             margin-top: 15px;
-            display: none; /* Hide the button initially */
+            display: none;
         }
     </style>
 </head>
@@ -31,54 +29,57 @@
                 <button class="large-button" type="submit">Generate QR Code</button>
             </div>
         </form>
-        <!-- Div where the QR code will be displayed -->
         <div id="qrcode"></div>
-        <!-- Print Button -->
-	<div class="button-container">
-              <button id="printButton" class="large-button" onclick="printQRCode()">Print QR Code</button>
+        <div class="button-container">
+            <button id="printButton" class="large-button" onclick="printQRCode()">Print QR Code</button>
         </div>
     </main>
     <footer>
         <p>&copy; 2024 StowQR</p>
     </footer>
-    
     <script>
-    function generate() {
-        // Get the item details from the input field
-        var itemDetails = document.getElementById('itemDetails').value;
-        
-        // Clear any existing QR codes
-        document.getElementById('qrcode').innerHTML = "";
+        function generate() {
+            const location = document.getElementById('itemDetails').value;
 
-        // Generate the QR code
-        var qrcode = new QRCode(document.getElementById("qrcode"), {
-            text: itemDetails,
-            width: 128,
-            height: 128
-        });
+            fetch(`/get-items?location=${location}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    document.getElementById('qrcode').innerHTML = "";
 
-        // Show the print button after generating the QR code
-        document.getElementById('printButton').style.display = 'inline-block';
-    }
+                    const qrcode = new QRCode(document.getElementById("qrcode"), {
+                        text: JSON.stringify(data.items),
+                        width: 128,
+                        height: 128
+                    });
 
-    function printQRCode() {
-        // Open print dialog to print the QR code
-        const qrCodeDiv = document.getElementById('qrcode');
-        
-        // Create a new window for printing
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write('<html><head><title>Print QR Code</title></head><body>');
-        printWindow.document.write(qrCodeDiv.innerHTML);
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-        
-        // Wait for the content to load before printing
-        printWindow.onload = function() {
-            printWindow.print();
-            printWindow.close();
-        };
-    }
+                    document.getElementById('printButton').style.display = 'inline-block';
+                } else {
+                    alert('No items found for this location.');
+                }
+            })
+            .catch((err) => {
+                console.error('Error fetching items:', err);
+                alert('An error occurred. Please try again.');
+            });
+        }
+
+        function printQRCode() {
+            const qrCodeDiv = document.getElementById('qrcode');
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>Print QR Code</title></head><body>');
+            printWindow.document.write(qrCodeDiv.innerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+
+            printWindow.onload = function() {
+                printWindow.print();
+                printWindow.close();
+            };
+        }
     </script>
-
 </body>
 </html>
